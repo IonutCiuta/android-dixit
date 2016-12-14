@@ -88,7 +88,7 @@ public class GoogleServicesActivity extends AppCompatActivity implements GoogleA
 
     private void playGame () {
         Intent i = new Intent(GoogleServicesActivity.this,GameActivity.class);
-        i.putExtra("message",name.getText());
+        //i.putExtra("message",name.getText());
         startActivity(i);
     }
 

@@ -25,7 +25,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private final String TAG = this.getClass().getSimpleName();
     private RvCardAdapter mCardAdapter;
     private GameState mGameState = new GameState();
-    private TextView name = (TextView) findViewById(R.id.name);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,12 +32,12 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
         setContentView(R.layout.activity_game);
         Intent intent = getIntent();
-        String message = intent.getStringExtra("message");
-        name.setText("my text");
+        //String message = intent.getStringExtra("message");
+        //name.setText("my text");
 
-        //setupUI();
-        //setupGame();
-        //Log.d(TAG, "onCreate() Restoring previous state");
+        setupUI();
+        setupGame();
+        Log.d(TAG, "onCreate() Restoring previous state");
 
     }
 
