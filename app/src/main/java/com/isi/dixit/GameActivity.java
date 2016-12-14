@@ -1,5 +1,6 @@
 package com.isi.dixit;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.isi.dixit.adapters.RvCardAdapter;
@@ -23,16 +25,24 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private final String TAG = this.getClass().getSimpleName();
     private RvCardAdapter mCardAdapter;
     private GameState mGameState = new GameState();
+    private TextView name = (TextView) findViewById(R.id.name);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_game);
-        setupUI();
-        setupGame();
+        Intent intent = getIntent();
+        String message = intent.getStringExtra("message");
+        name.setText("my text");
+
+        //setupUI();
+        //setupGame();
+        //Log.d(TAG, "onCreate() Restoring previous state");
+
     }
 
-    private void setupUI() {
+    public void setupUI() {
         mCardAdapter = new RvCardAdapter(new ArrayList<Card>(), this, new CardSelector() {
             @Override
             public void onCardSelected(Card card) {
@@ -46,7 +56,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         mRvCards.addItemDecoration(new CardSeparator(20));
     }
 
-    private void setupGame() {
+    public void setupGame() {
         mGameState.cards = CardProvider.getPlayerHand();
         mCardAdapter.setCards(mGameState.cards);
     }
