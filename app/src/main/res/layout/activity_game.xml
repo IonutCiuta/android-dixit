@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout 
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" 
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="170dp"
+        android:layout_height="140dp"
         android:layout_alignParentBottom="true">
 
         <android.support.v7.widget.RecyclerView
@@ -15,6 +16,71 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         </android.support.v7.widget.RecyclerView>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:padding="8dp">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/scoreRv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </android.support.v7.widget.RecyclerView>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/zoomFl"
+        android:layout_width="480dp"
+        android:layout_height="match_parent"
+        android:padding="32dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/selectedCardCv"
+                android:layout_gravity="center"
+                android:layout_centerInParent="true"
+                android:layout_width="@dimen/cardZoomWidth"
+                android:layout_height="@dimen/cardZoomHeight"
+                card_view:cardCornerRadius="4dp"
+                app:contentPadding="@dimen/cardZoomPadding">
+
+                <ImageView
+                    android:id="@+id/zoomIv"
+                    android:src="@drawable/c1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY" />
+
+            </android.support.v7.widget.CardView>
+
+            <ImageButton
+                android:id="@+id/cancelBtn"
+                android:src="@drawable/ic_clear_black_24dp"
+                android:layout_width="@dimen/btnZoom"
+                android:layout_height="@dimen/btnZoom"
+                android:scaleType="centerInside"
+                android:tint="#ffffff"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/selectedCardCv" />
+
+            <ImageButton
+                android:id="@+id/selectBtn"
+                android:src="@drawable/ic_done_black_24dp"
+                android:layout_width="@dimen/btnZoom"
+                android:layout_height="@dimen/btnZoom"
+                android:tint="#ffffff"
+                android:layout_alignTop="@+id/cancelBtn"
+                android:layout_toEndOf="@+id/selectedCardCv"
+                android:scaleType="centerInside" />
+        </RelativeLayout>
     </FrameLayout>
 
 </RelativeLayout>

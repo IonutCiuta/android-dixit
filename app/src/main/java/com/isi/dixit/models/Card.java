@@ -4,22 +4,22 @@ package com.isi.dixit.models;
 import java.io.Serializable;
 
 public class Card implements Serializable {
-    Integer cardSrcId;
+    String cardSrcId;
     Integer cardId;
 
     public Card() {
     }
 
-    public Card(Integer cardSrcId, Integer cardId) {
+    public Card(String cardSrcId, Integer cardId) {
         this.cardSrcId = cardSrcId;
         this.cardId = cardId;
     }
 
-    public Integer getCardSrcId() {
+    public String getCardSrcId() {
         return cardSrcId;
     }
 
-    public void setCardSrcId(Integer cardSrcId) {
+    public void setCardSrcId(String cardSrcId) {
         this.cardSrcId = cardSrcId;
     }
 
