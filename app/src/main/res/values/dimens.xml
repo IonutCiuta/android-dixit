@@ -4,4 +4,7 @@
     <dimen name="cardZoomHeight">290dp</dimen>
     <dimen name="cardZoomWidth">215dp</dimen>
     <dimen name="btnZoom">60dp</dimen>
+    <dimen name="cardHeight">180dp</dimen>
+    <dimen name="cardWidth">110dp</dimen>
+    <dimen name="btnRecord">45dp</dimen>
 </resources>
