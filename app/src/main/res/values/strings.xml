@@ -9,4 +9,10 @@
 
     <string name="luisAppID"></string>
     <string name="luisSubscriptionID"></string>
+    <string name="title_activity_maps">Map</string>
+    <string name="desc_google_icon">Google Logo</string>
+    <string name="title_text">Signed-Out</string>
+    <string name="signed_out">Signed out</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="play">Play Game</string>
 </resources>
