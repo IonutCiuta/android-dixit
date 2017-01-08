@@ -3,11 +3,13 @@ package com.isi.dixit;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -18,104 +20,89 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.games.Games;
+import com.google.example.games.basegameutils.BaseGameUtils;
 
-public class GoogleServicesActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
-
+public class GoogleServicesActivity extends AppCompatActivity implements
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+    private final String TAG = this.getClass().getSimpleName();
     private static final int REQUEST_CODE = 100;
-    private static final String TAG = "SignInActivity";
-    private SignInButton login;
-    private Button sign_out_button, play_game_button;
-    private TextView name, sign_out_name;
-    private GoogleApiClient googleApiClient;
-    private GoogleSignInOptions signInOptions;
-    private GoogleSignInAccount account;
+    private GoogleApiClient mGoogleApiClient;
+    private GoogleSignInAccount mGoogleAccount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate()");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_services);
 
-        signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+       mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Games.API)
+                .addScope(Games.SCOPE_GAMES)
+                .build();
 
-        googleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API, signInOptions).build();
-        login = (SignInButton) findViewById(R.id.login);
-        name = (TextView) findViewById(R.id.name);
-        sign_out_name = (TextView) findViewById(R.id.sign_out_name);
-        sign_out_button = (Button) findViewById(R.id.sign_out_button);
-        play_game_button = (Button) findViewById(R.id.play_button);
-
-        login.setSize(SignInButton.SIZE_WIDE);
-        login.setScopes(signInOptions.getScopeArray());
-
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-                startActivityForResult(signInIntent, REQUEST_CODE);
-            }
-        });
-        sign_out_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signOut();
-            }
-        });
-        play_game_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                playGame();
-            }
-        });
-
+        findViewById(R.id.signInBtn).setOnClickListener(this);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected void onStart() {
+        Log.i(TAG, "onStart()");
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
 
-        if (requestCode == REQUEST_CODE) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            account = result.getSignInAccount();
-            if (resultCode == RESULT_OK) {
-                updateUI(true);
-                name.setText(account.getDisplayName());
-                sign_out_name.setText("Welcome");
-            }
-
+    @Override
+    protected void onStop() {
+        Log.i(TAG, "onStop()");
+        super.onStop();
+        if(mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
         }
-
     }
 
-    private void playGame () {
-        Intent i = new Intent(GoogleServicesActivity.this,GameActivity.class);
-        //i.putExtra("message",name.getText());
-        startActivity(i);
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.i(TAG, "onConnected: connection was successful!");
+        Toast.makeText(this, "Successfully connected!", Toast.LENGTH_SHORT).show();
     }
 
-    private void signOut() {
-        Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        updateUI(false);
-                    }
-                });
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i(TAG, "onConnectionSuspended: connection was suspended!");
+        mGoogleApiClient.connect();
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+        Log.e(TAG, "onConnectionFailed: " + connectionResult);
     }
 
-    private void updateUI(boolean signedIn) {
-        if (signedIn) {
-            findViewById(R.id.login).setVisibility(View.GONE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
-        } else {
-            name.setText(R.string.signed_out);
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.signInBtn:
+                Log.d(TAG, "Sign in clicked");
+                mGoogleApiClient.connect();
+                playGame();
+                break;
 
-            findViewById(R.id.login).setVisibility(View.VISIBLE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
+            default:
+                Log.e(TAG, "Invalid id");
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.i(TAG, "onActivityResult: " + requestCode);
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void playGame () {
+        Log.i(TAG, "playGame()");
+        Intent intent = new Intent(this, GameActivity.class);
+        startActivity(intent);
     }
 }
