@@ -1,0 +1,17 @@
+<resources>
+    <string name="app.name">Dixit</string>
+    <string name="record_button">Record Button</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="desc_google_icon">Google Logo</string>
+    <string name="title_text">Signed-Out</string>
+    <string name="signed_out">Signed out</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="play">Play Game</string>
+
+    <string name="msg.quick.game">Quick Game</string>
+    <string name="msg.sign.out">Sign Out</string>
+    <string name="msg.greeting">Hello, %1$s</string>
+
+    <string name="error.authentication.title">Authentication Error</string>
+    <string name="error.authentication.content">An error occurred while trying to connect to the Google Play Services. Please try again later.</string>
+</resources>
