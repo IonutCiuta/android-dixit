@@ -35,12 +35,8 @@ public abstract class UtilityActivity extends FragmentActivity{
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    protected void dialogErr() {
-        BaseGameUtils.makeSimpleDialog(
-                this,
-                getString(R.string.error_authentication_title),
-                getString(R.string.error_authentication_content)
-        );
+    protected void dialogErr(String title, String content) {
+        BaseGameUtils.makeSimpleDialog(this, title, content);
     }
 
     protected void logMsg(String msg) {
