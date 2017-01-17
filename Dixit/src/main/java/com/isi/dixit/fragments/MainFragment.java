@@ -7,7 +7,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.google.android.gms.games.Player;
 import com.isi.dixit.R;
 
 
@@ -22,6 +24,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
     private Listener mListener;
     private boolean mShowSignIn;
+    private TextView mGreeting;
 
     public static MainFragment getInstance(Listener listener) {
         MainFragment instance = new MainFragment();
@@ -38,6 +41,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         for(int id : CLICKABLES)
             rootView.findViewById(id).setOnClickListener(this);
 
+        mGreeting = (TextView) rootView.findViewById(R.id.tv_greeting);
         return rootView;
     }
 
@@ -78,5 +82,10 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     public void showSignInButton(boolean show) {
         mShowSignIn = show;
         updateUi();
+    }
+
+    public void showGreeting(Player player) {
+        mGreeting.setText(player == null ?
+                "???" : String.format(getString(R.string.msg_greeting), player.getDisplayName()));
     }
 }

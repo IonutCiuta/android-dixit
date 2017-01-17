@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -28,20 +29,23 @@ public class GameplayFragment extends Fragment implements View.OnClickListener {
     private final String TAG = getClass().getSimpleName();
 
     public interface Listener {
-
+        void onSubmitClicked();
     }
 
     public interface CardSelector {
         void onCardSelected(Card card);
     }
 
+    private Listener mListener;
+
     private RvCardAdapter mCardAdapter;
     private RvScoreAdapter mScoreAdapter;
     private GameState mGameState = new GameState();
     private Card mSelectedCard, mZoomedCard;
 
-    public static GameplayFragment getInstance() {
+    public static GameplayFragment getInstance(Listener listener) {
         GameplayFragment instance = new GameplayFragment();
+        instance.mListener = listener;
         return instance;
     }
 
@@ -68,6 +72,14 @@ public class GameplayFragment extends Fragment implements View.OnClickListener {
             }
         });
 
+        final Button mSubmitBtn = (Button) rootView.findViewById(R.id.submitBtn);
+        mSubmitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onSubmitClicked();
+            }
+        });
+
         ImageButton mSelectBtn = (ImageButton) rootView.findViewById(R.id.selectBtn);
         mSelectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,6 +93,7 @@ public class GameplayFragment extends Fragment implements View.OnClickListener {
                 mZoomLayout.setVisibility(View.GONE);
                 mSelectedLayout.setVisibility(View.VISIBLE);
                 mSelectedCardIv.setImageResource(getCardResource(mSelectedCard));
+                mSubmitBtn.setVisibility(View.VISIBLE);
             }
         });
 

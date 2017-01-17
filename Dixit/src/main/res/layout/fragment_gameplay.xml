@@ -6,6 +6,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:text="Turn 0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/selectedLl"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="64dp"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        android:id="@+id/tvTurnCounter" />
+
     <FrameLayout
         android:id="@+id/selectedLl"
         android:layout_width="wrap_content"
@@ -109,4 +120,14 @@
                 android:scaleType="centerInside" />
         </RelativeLayout>
     </FrameLayout>
+
+    <Button
+        android:text="Submit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="32dp"
+        android:id="@+id/submitBtn"
+        android:visibility="gone"/>
 </RelativeLayout>
