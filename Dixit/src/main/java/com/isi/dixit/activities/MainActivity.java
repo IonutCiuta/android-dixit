@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -18,8 +17,6 @@ import com.google.android.gms.games.GamesStatusCodes;
 import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.OnInvitationReceivedListener;
-import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
-import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceivedListener;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.games.multiplayer.turnbased.OnTurnBasedMatchUpdateReceivedListener;
 import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMatch;
@@ -55,7 +52,7 @@ import java.util.ArrayList;
 public class MainActivity extends UtilityActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         OnInvitationReceivedListener, OnTurnBasedMatchUpdateReceivedListener,
-        MainFragment.Listener {
+        MainFragment.Listener, GameplayFragment.Listener {
 
     public static final String TAG = "MainActivity";
 
@@ -73,8 +70,6 @@ public class MainActivity extends UtilityActivity implements
 
     // Current turn-based match
     private TurnBasedMatch mTurnBasedMatch;
-
-    private AlertDialog mAlertDialog;
 
     // For our intents
     private static final int RC_SIGN_IN = 9001;
@@ -98,7 +93,7 @@ public class MainActivity extends UtilityActivity implements
 
     //Fragments
     MainFragment mMainFragment;
-    GameplayFragment mGameplayTheory;
+    GameplayFragment mGamePlayFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,17 +148,7 @@ public class MainActivity extends UtilityActivity implements
 
         setViewVisibility();
 
-        // As a demonstration, we are registering this activity as a handler for
-        // invitation and match events.
-
-        // This is *NOT* required; if you do not register a handler for
-        // invitation events, you will get standard notifications instead.
-        // Standard notifications may be preferable behavior in many cases.
         Games.Invitations.registerInvitationListener(mGoogleApiClient, this);
-
-        // Likewise, we are registering the optional MatchUpdateListener, which
-        // will replace notifications you would get otherwise. You do *NOT* have
-        // to register a MatchUpdateListener.
         Games.TurnBasedMultiplayer.registerMatchUpdateListener(mGoogleApiClient, this);
     }
 
@@ -275,68 +260,42 @@ public class MainActivity extends UtilityActivity implements
     public void setViewVisibility() {
         boolean isSignedIn = (mGoogleApiClient != null) && (mGoogleApiClient.isConnected());
 
-        if (!isSignedIn) {
-            mMainFragment.showSignInButton(true);
-            findViewById(R.id.fl_gameplay).setVisibility(View.GONE);
+        if(mMainFragment != null) {
+            if (!isSignedIn) {
+                mMainFragment.showSignInButton(true);
+                findViewById(R.id.fl_gameplay).setVisibility(View.GONE);
 
-            if (mAlertDialog != null) {
-                mAlertDialog.dismiss();
+                if (mAlertDialog != null) {
+                    mAlertDialog.dismiss();
+                }
+                return;
             }
-            return;
-        }
 
-        mMainFragment.showGreeting(Games.Players.getCurrentPlayer(mGoogleApiClient));
-        mMainFragment.showSignInButton(false);
+            mMainFragment.showGreeting(Games.Players.getCurrentPlayer(mGoogleApiClient));
+            mMainFragment.showSignInButton(false);
 
-        if (isDoingTurn) {
-            findViewById(R.id.fl_game_menu).setVisibility(View.GONE);
-            findViewById(R.id.fl_gameplay).setVisibility(View.VISIBLE);
-        } else {
-            findViewById(R.id.fl_game_menu).setVisibility(View.VISIBLE);
-            findViewById(R.id.fl_gameplay).setVisibility(View.GONE);
+            if (isDoingTurn) {
+                findViewById(R.id.fl_game_menu).setVisibility(View.GONE);
+                findViewById(R.id.fl_gameplay).setVisibility(View.VISIBLE);
+            } else {
+                findViewById(R.id.fl_game_menu).setVisibility(View.VISIBLE);
+                findViewById(R.id.fl_gameplay).setVisibility(View.GONE);
+            }
         }
     }
 
     // Switch to gameplay view.
     public void setGameplayUI() {
+        if(mGamePlayFragment == null) {
+            mGamePlayFragment = GameplayFragment.getInstance(this);
+            switchToFragment(mGamePlayFragment);
+            mMainFragment = null;
+        }
+
         isDoingTurn = true;
-        setViewVisibility();
+        /*setViewVisibility();
         mMainFragment.updateDataView(mTurnData.cardDescription);
-        mMainFragment.updateTurnCounterView("Turn " + mTurnData.turnCounter);
-    }
-
-    // Helpful dialogs
-
-    public void showSpinner() {
-        findViewById(R.id.progressLayout).setVisibility(View.VISIBLE);
-    }
-
-    public void dismissSpinner() {
-        findViewById(R.id.progressLayout).setVisibility(View.GONE);
-    }
-
-    // Generic warning/info dialog
-    public void showWarning(String title, String message) {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-
-        // set title
-        alertDialogBuilder.setTitle(title).setMessage(message);
-
-        // set dialog message
-        alertDialogBuilder.setCancelable(false).setPositiveButton("OK",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        // if this button is clicked, close
-                        // current activity
-                    }
-                });
-
-        // create alert dialog
-        mAlertDialog = alertDialogBuilder.create();
-
-        // show it
-        mAlertDialog.show();
+        mMainFragment.updateTurnCounterView("Turn " + mTurnData.turnCounter);*/
     }
 
     // Rematch dialog
@@ -443,10 +402,7 @@ public class MainActivity extends UtilityActivity implements
     // callback to OnTurnBasedMatchUpdated(), which will show the game
     // UI.
     public void startMatch(TurnBasedMatch match) {
-        mTurnData = new DixitTurn();
-        // Some basic turn data
-        mTurnData.cardDescription = "First turn";
-
+        setupGameData();
         mMatch = match;
 
         String playerId = Games.Players.getCurrentPlayerId(mGoogleApiClient);
@@ -462,6 +418,12 @@ public class MainActivity extends UtilityActivity implements
                         processResult(result);
                     }
                 });
+    }
+
+    //setup game data
+    private void setupGameData() {
+        mTurnData = new DixitTurn();
+        mTurnData.cardDescription = "First turn";
     }
 
     // If you choose to rematch, then call it and wait for a response.
@@ -707,6 +669,7 @@ public class MainActivity extends UtilityActivity implements
         return false;
     }
 
+    //MainFragment.Listener implementation
     @Override
     public void onSignInClicked() {
         if (!BaseGameUtils.verifySampleSetup(this, R.string.app_id)) {
@@ -730,8 +693,7 @@ public class MainActivity extends UtilityActivity implements
 
     @Override
     public void onQuickGameClicked() {
-        Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(
-                1, 1, 0);
+        Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(MIN_PLAYERS, MIN_PLAYERS, 0);
 
         TurnBasedMatchConfig tbmc = TurnBasedMatchConfig.builder()
                 .setAutoMatchCriteria(autoMatchCriteria).build();
@@ -759,5 +721,21 @@ public class MainActivity extends UtilityActivity implements
     public void onCheckGamesClicked() {
         Intent intent = Games.TurnBasedMultiplayer.getInboxIntent(mGoogleApiClient);
         startActivityForResult(intent, RC_LOOK_AT_MATCHES);
+    }
+
+    //GameplayFragment.Listener implementation
+    @Override
+    public void onFinishClicked() {
+
+    }
+
+    @Override
+    public void onCardSelected() {
+
+    }
+
+    @Override
+    public void onCardVoted() {
+
     }
 }
