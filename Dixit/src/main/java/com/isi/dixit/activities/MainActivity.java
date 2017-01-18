@@ -18,6 +18,8 @@ import com.google.android.gms.games.GamesStatusCodes;
 import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.OnInvitationReceivedListener;
+import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
+import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceivedListener;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.games.multiplayer.turnbased.OnTurnBasedMatchUpdateReceivedListener;
 import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMatch;
@@ -27,6 +29,7 @@ import com.google.example.games.basegameutils.BaseGameUtils;
 import com.isi.dixit.R;
 import com.isi.dixit.fragments.GameplayFragment;
 import com.isi.dixit.fragments.MainFragment;
+import com.isi.dixit.game.DixitState;
 import com.isi.dixit.game.DixitTurn;
 
 import java.util.ArrayList;
@@ -188,7 +191,6 @@ public class MainActivity extends UtilityActivity implements
 
         setViewVisibility();
     }
-
     // In-game controls
 
     // Cancel the game. Should possibly wait until the game is canceled before
@@ -247,12 +249,12 @@ public class MainActivity extends UtilityActivity implements
         String nextParticipantId = getNextParticipantId();
         // Create the next turn
         mTurnData.turnCounter += 1;
-        mTurnData.data = mMainFragment.getDataViewContent();
+        mTurnData.cardDescription = mMainFragment.getDataViewContent();
 
         showSpinner();
 
         Games.TurnBasedMultiplayer.takeTurn(mGoogleApiClient, mMatch.getMatchId(),
-                mTurnData.persist(), nextParticipantId).setResultCallback(
+                DixitState.persistState(mTurnData), nextParticipantId).setResultCallback(
                 new ResultCallback<TurnBasedMultiplayer.UpdateMatchResult>() {
                     @Override
                     public void onResult(TurnBasedMultiplayer.UpdateMatchResult result) {
@@ -270,8 +272,6 @@ public class MainActivity extends UtilityActivity implements
         boolean isSignedIn = (mGoogleApiClient != null) && (mGoogleApiClient.isConnected());
 
         if (!isSignedIn) {
-            //findViewById(R.id.login_layout).setVisibility(View.VISIBLE);
-            //findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
             mMainFragment.showSignInButton(true);
             findViewById(R.id.fl_gameplay).setVisibility(View.GONE);
 
@@ -281,10 +281,6 @@ public class MainActivity extends UtilityActivity implements
             return;
         }
 
-
-        /*((TextView) findViewById(R.id.name_field)).setText(Games.Players.getCurrentPlayer(
-                mGoogleApiClient).getDisplayName());
-        findViewById(R.id.login_layout).setVisibility(View.GONE);*/
         mMainFragment.showGreeting(Games.Players.getCurrentPlayer(mGoogleApiClient));
         mMainFragment.showSignInButton(false);
 
@@ -301,7 +297,7 @@ public class MainActivity extends UtilityActivity implements
     public void setGameplayUI() {
         isDoingTurn = true;
         setViewVisibility();
-        mMainFragment.updateDataView(mTurnData.data);
+        mMainFragment.updateDataView(mTurnData.cardDescription);
         mMainFragment.updateTurnCounterView("Turn " + mTurnData.turnCounter);
     }
 
@@ -445,7 +441,7 @@ public class MainActivity extends UtilityActivity implements
     public void startMatch(TurnBasedMatch match) {
         mTurnData = new DixitTurn();
         // Some basic turn data
-        mTurnData.data = "First turn";
+        mTurnData.cardDescription = "First turn";
 
         mMatch = match;
 
@@ -455,7 +451,7 @@ public class MainActivity extends UtilityActivity implements
         showSpinner();
 
         Games.TurnBasedMultiplayer.takeTurn(mGoogleApiClient, match.getMatchId(),
-                mTurnData.persist(), myParticipantId).setResultCallback(
+                DixitState.persistState(mTurnData), myParticipantId).setResultCallback(
                 new ResultCallback<TurnBasedMultiplayer.UpdateMatchResult>() {
                     @Override
                     public void onResult(TurnBasedMultiplayer.UpdateMatchResult result) {
@@ -551,7 +547,7 @@ public class MainActivity extends UtilityActivity implements
         // OK, it's active. Check on turn status.
         switch (turnStatus) {
             case TurnBasedMatch.MATCH_TURN_STATUS_MY_TURN:
-                mTurnData = DixitTurn.unpersist(mMatch.getData());
+                mTurnData = DixitState.unpersistState(mMatch.getData());
                 setGameplayUI();
                 return;
             case TurnBasedMatch.MATCH_TURN_STATUS_THEIR_TURN:

@@ -29,7 +29,9 @@ public class GameplayFragment extends Fragment implements View.OnClickListener {
     private final String TAG = getClass().getSimpleName();
 
     public interface Listener {
-        void onSubmitClicked();
+        void onFinishClicked();
+        void onCardSelected();
+        void onCardVoted();
     }
 
     public interface CardSelector {
@@ -76,7 +78,7 @@ public class GameplayFragment extends Fragment implements View.OnClickListener {
         mSubmitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.onSubmitClicked();
+                mListener.onCardSelected();
             }
         });
 
