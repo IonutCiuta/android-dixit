@@ -81,6 +81,10 @@ public class MainActivity extends UtilityActivity implements
     final static int RC_SELECT_PLAYERS = 10000;
     final static int RC_LOOK_AT_MATCHES = 10001;
 
+    // Game constant
+    private final int MIN_PLAYERS = 1;
+    private final int MAX_PLAYERS = 3;
+
     // Should I be showing the turn API?
     public boolean isDoingTurn = false;
 
@@ -573,8 +577,7 @@ public class MainActivity extends UtilityActivity implements
 
         isDoingTurn = false;
 
-        showWarning("Match",
-                "This match is canceled.  All other players will have their game ended.");
+        showWarning("Match", "This match is canceled.  All other players will have their game ended.");
     }
 
     private void processResult(TurnBasedMultiplayer.InitiateMatchResult result) {
@@ -629,33 +632,26 @@ public class MainActivity extends UtilityActivity implements
     // Handle notification events.
     @Override
     public void onInvitationReceived(Invitation invitation) {
-        Toast.makeText(
-                this,
-                "An invitation has arrived from "
-                        + invitation.getInviter().getDisplayName(), Toast.LENGTH_SHORT)
-                .show();
+        toastMsg("An invitation has arrived from " + invitation.getInviter().getDisplayName());
     }
 
     @Override
     public void onInvitationRemoved(String invitationId) {
-        Toast.makeText(this, "An invitation was removed.", Toast.LENGTH_SHORT).show();
+       toastMsg("An invitation was removed.");
     }
 
     @Override
     public void onTurnBasedMatchReceived(TurnBasedMatch match) {
-        Toast.makeText(this, "A match was updated.", Toast.LENGTH_SHORT).show();
+        toastMsg("A match was updated.");
         updateMatch(match);
     }
 
     @Override
     public void onTurnBasedMatchRemoved(String matchId) {
-        Toast.makeText(this, "A match was removed.", Toast.LENGTH_SHORT).show();
-
+        toastMsg("A match was removed.");
     }
 
-    public void showErrorMessage(TurnBasedMatch match, int statusCode,
-                                 int stringId) {
-
+    public void showErrorMessage(TurnBasedMatch match, int statusCode, int stringId) {
         showWarning("Warning", getResources().getString(stringId));
     }
 
@@ -754,8 +750,8 @@ public class MainActivity extends UtilityActivity implements
 
     @Override
     public void onStartGameClicked() {
-        Intent intent = Games.TurnBasedMultiplayer.getSelectOpponentsIntent(mGoogleApiClient,
-                1, 7, true);
+        Intent intent = Games.TurnBasedMultiplayer.getSelectOpponentsIntent(
+                mGoogleApiClient, MIN_PLAYERS, MAX_PLAYERS, true);
         startActivityForResult(intent, RC_SELECT_PLAYERS);
     }
 
