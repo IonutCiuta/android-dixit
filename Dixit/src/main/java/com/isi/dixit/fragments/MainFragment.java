@@ -3,7 +3,6 @@ package com.isi.dixit.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +19,14 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         void onSignInClicked();
         void onSignOutClicked();
         void onQuickGameClicked();
+        void onStartGameClicked();
+        void onCheckGamesClicked();
     }
 
     private Listener mListener;
     private boolean mShowSignIn;
-    private TextView mGreeting;
+
+    public TextView mDataView, mTurnTextView, mGreetingTextView;
 
     public static MainFragment getInstance(Listener listener) {
         MainFragment instance = new MainFragment();
@@ -36,12 +38,16 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        int[] CLICKABLES = {R.id.btn_sign_in, R.id.btn_sign_out, R.id.btn_quick_game};
+        int[] CLICKABLES = {R.id.btn_sign_in, R.id.btn_sign_out, R.id.btn_start_game,
+                            R.id.btn_quick_game, R.id.btn_check_games};
 
         for(int id : CLICKABLES)
             rootView.findViewById(id).setOnClickListener(this);
 
-        mGreeting = (TextView) rootView.findViewById(R.id.tv_greeting);
+        mDataView = (TextView) rootView.findViewById(R.id.data_view);
+        mTurnTextView = (TextView) rootView.findViewById(R.id.turn_counter_view);
+        mGreetingTextView = (TextView) rootView.findViewById(R.id.tv_greeting);
+
         return rootView;
     }
 
@@ -63,8 +69,16 @@ public class MainFragment extends Fragment implements View.OnClickListener {
                 mListener.onSignOutClicked();
                 break;
 
+            case R.id.btn_start_game:
+                mListener.onStartGameClicked();
+                break;
+
             case R.id.btn_quick_game:
                 mListener.onQuickGameClicked();
+                break;
+
+            case R.id.btn_check_games:
+                mListener.onCheckGamesClicked();
                 break;
         }
     }
@@ -75,7 +89,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
                 .findViewById(R.id.fl_sign_in)
                 .setVisibility(mShowSignIn ? View.VISIBLE : View.GONE);
         getActivity()
-                .findViewById(R.id.fl_quick_game)
+                .findViewById(R.id.fl_game_menu)
                 .setVisibility(mShowSignIn ? View.GONE : View.VISIBLE);
     }
 
@@ -85,7 +99,19 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     }
 
     public void showGreeting(Player player) {
-        mGreeting.setText(player == null ?
+        mGreetingTextView.setText(player == null ?
                 "???" : String.format(getString(R.string.msg_greeting), player.getDisplayName()));
+    }
+
+    public void updateTurnCounterView(String text) {
+        mTurnTextView.setText(text);
+    }
+
+    public void updateDataView(String text) {
+        mDataView.setText(text);
+    }
+
+    public String getDataViewContent() {
+        return mDataView.getText().toString();
     }
 }

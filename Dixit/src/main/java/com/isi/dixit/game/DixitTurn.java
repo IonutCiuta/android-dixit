@@ -11,9 +11,9 @@ import java.nio.charset.Charset;
 
 public class DixitTurn {
     private static final String TAG = "DixitTurn";
-    private String message;
-    private String data;
-    private int turnCounter;
+    public String message;
+    public String data;
+    public int turnCounter;
 
     public byte[] persist() {
         JSONObject retVal = new JSONObject();

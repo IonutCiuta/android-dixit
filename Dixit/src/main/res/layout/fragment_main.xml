@@ -42,10 +42,10 @@
     </FrameLayout>
 
     <FrameLayout
-        android:id="@+id/fl_quick_game"
-        android:layout_height="64dp"
+        android:id="@+id/fl_game_menu"
+        android:layout_height="112dp"
         android:layout_width="match_parent"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_gravity="center_vertical">
@@ -57,30 +57,139 @@
             android:alpha="0.5">
         </LinearLayout>
 
-        <Button
-            android:id="@+id/btn_quick_game"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="6dp"
-            android:layout_gravity="start"
-            android:text="@string/msg.quick.game" />
+            android:padding="8dp">
 
-        <TextView
-            android:id="@+id/tv_greeting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="6dp"
-            android:layout_gravity="center_horizontal|center_vertical"
-            tools:text="Hello, John"
-            android:textSize="24sp"
-            android:textStyle="bold"/>
+            <Button
+                android:id="@+id/btn_start_game"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_gravity="start"
+                android:text="@string/msg.start.game" />
 
-        <Button
-            android:id="@+id/btn_sign_out"
-            android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/btn_quick_game"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/btn_start_game"
+                android:layout_gravity="start"
+                android:text="@string/msg.quick.game" />
+
+            <TextView
+                android:id="@+id/tv_greeting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                tools:text="Hello, John"
+                android:textSize="24sp"
+                android:textStyle="bold"/>
+
+            <Button
+                android:id="@+id/btn_check_games"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="end"
+                android:text="@string/msg.check.games" />
+
+            <Button
+                android:id="@+id/btn_sign_out"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="@string/msg.sign.out"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_gameplay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fl_sign_in"
+        android:layout_alignParentStart="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="6dp"
-            android:layout_gravity="end"
-            android:text="@string/msg.sign.out" />
+            android:visibility="visible">
+
+            <EditText
+                android:id="@+id/data_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="8dp"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="@string/hello_world"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:layout_alignParentEnd="true"/>
+
+            <TextView
+                android:id="@+id/turn_counter_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/turn_counter"
+                android:width="300dp"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentStart="true"
+                android:layout_margin="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_below="@+id/data_view"
+                android:weightSum="4">
+
+                <Button
+                    android:id="@+id/doneButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onDoneClicked"
+                    android:text="@string/done"
+                    tools:ignore="ButtonStyle"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:id="@+id/cancelButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onCancelClicked"
+                    android:text="@string/cancel"
+                    tools:ignore="ButtonStyle"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:id="@+id/leaveButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onLeaveClicked"
+                    android:text="@string/leave"
+                    tools:ignore="ButtonStyle"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:id="@+id/finishButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onFinishClicked"
+                    android:text="@string/finish"
+                    tools:ignore="ButtonStyle"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+        </RelativeLayout>
     </FrameLayout>
 </RelativeLayout>
