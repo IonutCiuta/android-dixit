@@ -25,6 +25,9 @@
     <string name="match_error_inactive_match">This match is inactive.</string>
     <string name='match_error_locally_modified'>This match has locally-modified data.  This operation cannot be performed until the match is sent to the server.</string>
 
+    <string name="speech_prompt">Say something&#8230;</string>
+    <string name="speech_not_supported">Sorry! Your device doesn\'t support speech input</string>
+
     <string name="hello_world">Hello world!</string>
     <string name="sign_out">Sign Out</string>
     <string name="match_instructions">Type in a new word for the data in this game, then hit done.</string>
