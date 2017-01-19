@@ -1,6 +1,7 @@
 package com.isi.dixit.fragments;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -168,6 +169,7 @@ public class GameplayFragment extends Fragment implements View.OnClickListener {
     private void updateUI() {
         final String myId = mTurnData.currentPlayer;
         initializeHand(myId);
+        initializeCandidates();
 
         if (mTurnData.leadingPlayerId.equals(myId)) {
             logMsg("I'M THE LEADER");
@@ -194,8 +196,6 @@ public class GameplayFragment extends Fragment implements View.OnClickListener {
                 logMsg("EVERYBODY HAS SELECTED CARD. THEY MUST VOTE.");
                 mTurnData.selectionState = false;
                 mTurnData.votingState = true;
-
-                initializeCandidates();
                 mCardAdapter.setCards(mCandidatesCards);
 
                 mSubmitBtn.setText("START VOTE");
@@ -216,7 +216,7 @@ public class GameplayFragment extends Fragment implements View.OnClickListener {
             logMsg("I'M JUST SOME PLAYER");
             if (mTurnData.selectionState) {
                 logMsg("I MUST SELECT CARD");
-                mCardAdapter.setCards(mCandidatesCards);
+                mCardAdapter.setCards(mHandCards);
 
                 mSubmitBtn.setText("SELECT CARD");
                 mSubmitBtn.setOnClickListener(new View.OnClickListener() {
@@ -235,7 +235,6 @@ public class GameplayFragment extends Fragment implements View.OnClickListener {
 
             if (mTurnData.votingState) {
                 logMsg("I MUST VOTE CARD");
-                initializeCandidates();
                 mCardAdapter.setCards(mCandidatesCards);
 
                 mSubmitBtn.setText("VOTE");
@@ -280,7 +279,7 @@ public class GameplayFragment extends Fragment implements View.OnClickListener {
     private void initializeCandidates() {
         mCandidatesCards = new ArrayList<>();
         for(SelectedCard selectedCard : mTurnData.selectedCards) {
-            mHandCards.add(new Card("c" + selectedCard.card, selectedCard.card));
+            mCandidatesCards.add(new Card("c" + selectedCard.card, selectedCard.card));
         }
     }
 

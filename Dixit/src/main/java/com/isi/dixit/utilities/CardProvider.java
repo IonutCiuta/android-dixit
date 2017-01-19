@@ -11,17 +11,8 @@ import java.util.Random;
 import java.util.Set;
 
 public class CardProvider {
-    private static final int CARD_COUNT = 108;
     private static final int HAND_COUNT = 6;
-    private static int LAST_CARD_ID = 0;
-
-    public static List<Card> getAllCards() {
-        List<Card> result = new ArrayList<>();
-        for(int i = 1; i <= CARD_COUNT; i++) {
-            result.add(new Card("c" + i, i));
-        }
-        return result;
-    }
+    private static int LAST_CARD_ID = 1;
 
     public static List<Integer> getPlayerHandIds() {
         List<Integer> handIds = new ArrayList<>();
