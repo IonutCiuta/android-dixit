@@ -45,7 +45,8 @@ public class RvCardAdapter extends RecyclerView.Adapter<RvCardAdapter.RvCardVH> 
 
     @Override
     public int getItemCount() {
-        return mCards.size();
+        if(mCards == null) return 0;
+        else return mCards.size();
     }
 
     public void setCards(List<Card> cards) {

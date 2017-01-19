@@ -28,6 +28,8 @@ import com.isi.dixit.fragments.GameplayFragment;
 import com.isi.dixit.fragments.MainFragment;
 import com.isi.dixit.game.DixitState;
 import com.isi.dixit.game.DixitTurn;
+import com.isi.dixit.game.Hand;
+import com.isi.dixit.utilities.CardProvider;
 
 import java.util.ArrayList;
 
@@ -286,16 +288,15 @@ public class MainActivity extends UtilityActivity implements
 
     // Switch to gameplay view.
     public void setGameplayUI() {
+        isDoingTurn = true;
+        if(mTurnData == null) mTurnData = new DixitTurn();
         if(mGamePlayFragment == null) {
-            mGamePlayFragment = GameplayFragment.getInstance(this);
+            mGamePlayFragment = GameplayFragment.getInstance(this, mTurnData);
             switchToFragment(mGamePlayFragment);
             mMainFragment = null;
+        } else {
+            mGamePlayFragment.updateTurn(mTurnData);
         }
-
-        isDoingTurn = true;
-        /*setViewVisibility();
-        mMainFragment.updateDataView(mTurnData.cardDescription);
-        mMainFragment.updateTurnCounterView("Turn " + mTurnData.turnCounter);*/
     }
 
     // Rematch dialog
@@ -328,70 +329,66 @@ public class MainActivity extends UtilityActivity implements
     @Override
     public void onActivityResult(int request, int response, Intent data) {
         super.onActivityResult(request, response, data);
-        if (request == RC_SIGN_IN) {
-            mSignInClicked = false;
-            mResolvingConnectionFailure = false;
-            if (response == Activity.RESULT_OK) {
-                mGoogleApiClient.connect();
-            } else {
-                BaseGameUtils.showActivityResultError(this, request, response, R.string.signin_other_error);
-            }
-        } else if (request == RC_LOOK_AT_MATCHES) {
-            // Returning from the 'Select Match' dialog
+        switch (request) {
+            case RC_SIGN_IN: //SIGN IN STARTED
+                mSignInClicked = false;
+                mResolvingConnectionFailure = false;
+                if (response == Activity.RESULT_OK) {
+                    mGoogleApiClient.connect();
+                } else {
+                    BaseGameUtils.showActivityResultError(this, request, response, R.string.signin_other_error);
+                }
+                break;
 
-            if (response != Activity.RESULT_OK) {
-                // user canceled
-                return;
-            }
+            case RC_LOOK_AT_MATCHES: //USER SELECTS MATCH TO PLAY
+                if (response != Activity.RESULT_OK) return;
+                TurnBasedMatch match = data.getParcelableExtra(Multiplayer.EXTRA_TURN_BASED_MATCH);
+                if (match != null) updateMatch(match);
+                logMsg("Match = " + match);
+                break;
 
-            TurnBasedMatch match = data
-                    .getParcelableExtra(Multiplayer.EXTRA_TURN_BASED_MATCH);
+            case RC_SELECT_PLAYERS: //USER IS LEADING GAME AND SELECTS OPPONENTS
+                if (response != Activity.RESULT_OK) {
+                    return;
+                }
 
-            if (match != null) {
-                updateMatch(match);
-            }
+                // get automatch criteria
+                Bundle autoMatchCriteria = null;
 
-            Log.d(TAG, "Match = " + match);
-        } else if (request == RC_SELECT_PLAYERS) {
-            // Returned from 'Select players to Invite' dialog
+                int minAutoMatchPlayers = data.getIntExtra(
+                        Multiplayer.EXTRA_MIN_AUTOMATCH_PLAYERS, 0);
+                int maxAutoMatchPlayers = data.getIntExtra(
+                        Multiplayer.EXTRA_MAX_AUTOMATCH_PLAYERS, 0);
 
-            if (response != Activity.RESULT_OK) {
-                // user canceled
-                return;
-            }
+                if (minAutoMatchPlayers > 0) {
+                    autoMatchCriteria = RoomConfig.createAutoMatchCriteria(
+                            minAutoMatchPlayers, maxAutoMatchPlayers, 0);
+                } else {
+                    autoMatchCriteria = null;
+                }
 
-            // get the invitee list
-            final ArrayList<String> invitees = data
-                    .getStringArrayListExtra(Games.EXTRA_PLAYER_IDS);
+                // get the invitee list
+                final ArrayList<String> invitees = data.getStringArrayListExtra(Games.EXTRA_PLAYER_IDS);
+                mTurnData = new DixitTurn();
+                mTurnData.playerIds = invitees;
+                mTurnData.leadingPlayerId = Games.Players.getCurrentPlayerId(mGoogleApiClient);
 
-            // get automatch criteria
-            Bundle autoMatchCriteria = null;
+                setupGameData();
 
-            int minAutoMatchPlayers = data.getIntExtra(
-                    Multiplayer.EXTRA_MIN_AUTOMATCH_PLAYERS, 0);
-            int maxAutoMatchPlayers = data.getIntExtra(
-                    Multiplayer.EXTRA_MAX_AUTOMATCH_PLAYERS, 0);
+                TurnBasedMatchConfig tbmc = TurnBasedMatchConfig.builder()
+                        .addInvitedPlayers(invitees)
+                        .setAutoMatchCriteria(autoMatchCriteria).build();
 
-            if (minAutoMatchPlayers > 0) {
-                autoMatchCriteria = RoomConfig.createAutoMatchCriteria(
-                        minAutoMatchPlayers, maxAutoMatchPlayers, 0);
-            } else {
-                autoMatchCriteria = null;
-            }
-
-            TurnBasedMatchConfig tbmc = TurnBasedMatchConfig.builder()
-                    .addInvitedPlayers(invitees)
-                    .setAutoMatchCriteria(autoMatchCriteria).build();
-
-            // Start the match
-            Games.TurnBasedMultiplayer.createMatch(mGoogleApiClient, tbmc).setResultCallback(
-                    new ResultCallback<TurnBasedMultiplayer.InitiateMatchResult>() {
-                        @Override
-                        public void onResult(TurnBasedMultiplayer.InitiateMatchResult result) {
-                            processResult(result);
-                        }
-                    });
-            showSpinner();
+                // Start the match
+                Games.TurnBasedMultiplayer.createMatch(mGoogleApiClient, tbmc).setResultCallback(
+                        new ResultCallback<TurnBasedMultiplayer.InitiateMatchResult>() {
+                            @Override
+                            public void onResult(TurnBasedMultiplayer.InitiateMatchResult result) {
+                                processResult(result);
+                            }
+                        });
+                showSpinner();
+                break;
         }
     }
 
@@ -402,11 +399,11 @@ public class MainActivity extends UtilityActivity implements
     // callback to OnTurnBasedMatchUpdated(), which will show the game
     // UI.
     public void startMatch(TurnBasedMatch match) {
-        setupGameData();
         mMatch = match;
 
         String playerId = Games.Players.getCurrentPlayerId(mGoogleApiClient);
         String myParticipantId = mMatch.getParticipantId(playerId);
+        mTurnData.leadingPlayerId = playerId;
 
         showSpinner();
 
@@ -422,8 +419,20 @@ public class MainActivity extends UtilityActivity implements
 
     //setup game data
     private void setupGameData() {
-        mTurnData = new DixitTurn();
-        mTurnData.cardDescription = "First turn";
+        logMsg("Setting up game data!");
+        Hand hand;
+
+        for(int i = 0; i < mTurnData.playerIds.size(); i++) {
+            hand = new Hand();
+            hand.playerId = mTurnData.playerIds.get(i);
+            hand.cards = CardProvider.getPlayerHandIds();
+            mTurnData.hands.add(hand);
+        }
+
+        hand = new Hand();
+        hand.playerId = mTurnData.leadingPlayerId;
+        hand.cards = CardProvider.getPlayerHandIds();
+        mTurnData.hands.add(hand);
     }
 
     // If you choose to rematch, then call it and wait for a response.
@@ -514,6 +523,7 @@ public class MainActivity extends UtilityActivity implements
         switch (turnStatus) {
             case TurnBasedMatch.MATCH_TURN_STATUS_MY_TURN:
                 mTurnData = DixitState.unpersistState(mMatch.getData());
+                mTurnData.currentPlayer = Games.Players.getCurrentPlayerId(mGoogleApiClient);
                 setGameplayUI();
                 return;
             case TurnBasedMatch.MATCH_TURN_STATUS_THEIR_TURN:
@@ -725,17 +735,45 @@ public class MainActivity extends UtilityActivity implements
 
     //GameplayFragment.Listener implementation
     @Override
-    public void onFinishClicked() {
+    public void onSubmitClicked() {
+        showSpinner();
 
+        String nextParticipantId = getNextParticipantId();
+        // Create the next turn
+        mTurnData.turnCounter += 1;
+
+        showSpinner();
+
+        Games.TurnBasedMultiplayer.takeTurn(mGoogleApiClient, mMatch.getMatchId(),
+                DixitState.persistState(mTurnData), nextParticipantId).setResultCallback(
+                new ResultCallback<TurnBasedMultiplayer.UpdateMatchResult>() {
+                    @Override
+                    public void onResult(TurnBasedMultiplayer.UpdateMatchResult result) {
+                        processResult(result);
+                    }
+                });
+
+        mTurnData = null;
     }
 
     @Override
-    public void onCardSelected() {
-
+    public void onStartVoteClicked() {
+        onSubmitClicked();
     }
 
     @Override
-    public void onCardVoted() {
-
+    public void onPlayCardClicked() {
+        onSubmitClicked();
     }
+
+    @Override
+    public void onVoteCardClicked() {
+        onSubmitClicked();
+    }
+
+    public String identifyMe() {
+        return Games.Players.getCurrentPlayerId(mGoogleApiClient);
+    }
+
+
 }

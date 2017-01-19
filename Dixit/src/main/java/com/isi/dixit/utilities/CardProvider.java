@@ -10,9 +10,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-public class DataProvider {
+public class CardProvider {
     private static final int CARD_COUNT = 108;
     private static final int HAND_COUNT = 6;
+    private static int LAST_CARD_ID = 0;
 
     public static List<Card> getAllCards() {
         List<Card> result = new ArrayList<>();
@@ -22,22 +23,15 @@ public class DataProvider {
         return result;
     }
 
-    public static List<Card> getPlayerHand() {
-        List<Card> cards = getAllCards();
-        List<Card> hand = new ArrayList<>();
-        Set<Integer> selectedCards = new HashSet<>();
-        Random random = new Random();
+    public static List<Integer> getPlayerHandIds() {
+        List<Integer> handIds = new ArrayList<>();
 
-        for(int i = 0; i < HAND_COUNT; i++) {
-            int cardIndex = random.nextInt(CARD_COUNT + 1);
-            while(selectedCards.contains(cardIndex)) {
-                cardIndex = random.nextInt(CARD_COUNT + 1);
-            }
-            selectedCards.add(cardIndex);
-            hand.add(cards.get(cardIndex));
+        for (int i = 0; i < HAND_COUNT; i++) {
+            handIds.add(i + LAST_CARD_ID);
         }
 
-        return hand;
+        LAST_CARD_ID += HAND_COUNT;
+        return handIds;
     }
 
     public static List<Score> getLeaderboard() {
