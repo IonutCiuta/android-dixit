@@ -15,7 +15,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.isi.dixit.R;
 import com.isi.dixit.adapters.RvCardAdapter;
@@ -41,6 +40,7 @@ public class GameplayFragment extends Fragment {
         void onStartVoteClicked();
         void onPlayCardClicked();
         void onVoteCardClicked();
+        void onGameOver();
     }
 
     public interface CardSelector {
@@ -213,6 +213,7 @@ public class GameplayFragment extends Fragment {
                 //score
                 //refreshGameData
                 calculateScore();
+                checkIfGameOver();
 
 
                 mSelectedCard = null;
@@ -350,6 +351,20 @@ public class GameplayFragment extends Fragment {
         }
 
         mScoreAdapter.setScores(mTurnData.leaderboard);
+    }
+
+    private void checkIfGameOver() {
+        logMsg("CHECK IF GAME OVER");
+        for(Score score : mTurnData.leaderboard) {
+            if(score.points == 2) {
+                logMsg("WINNER FOUND");
+                mTurnData.winnerId = score.player;
+                mTurnData.winnerName = score.name;
+                mListener.onGameOver();
+                return;
+            }
+        }
+        logMsg("NO WINNER FOUND");
     }
 
     protected void logMsg(String msg) {

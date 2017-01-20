@@ -8,6 +8,8 @@ import java.util.List;
 public class DixitTurn implements Serializable {
     public String leadingPlayerId;
     public String currentPlayer;
+    public String winnerId;
+    public String winnerName;
     public int turnCounter = 0;
     public int describedCard;
     public String cardDescription;

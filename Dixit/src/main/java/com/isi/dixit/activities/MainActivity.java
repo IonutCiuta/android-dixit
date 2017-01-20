@@ -487,16 +487,13 @@ public class MainActivity extends UtilityActivity implements
                 return;
             case TurnBasedMatch.MATCH_STATUS_COMPLETE:
                 if (turnStatus == TurnBasedMatch.MATCH_TURN_STATUS_COMPLETE) {
-                    showWarning(
-                            "Complete!",
-                            "This game is over; someone finished it, and so did you!  There is nothing to be done.");
+                    showWarning("Game over!", mTurnData.winnerName + " won! Congrats!");
                     break;
                 }
 
                 // Note that in this state, you must still call "Finish" yourself,
                 // so we allow this to continue.
-                showWarning("Complete!",
-                        "This game is over; someone finished it!  You can only finish it now.");
+                showWarning("Game over!", mTurnData.winnerName + " won! Congrats!");
         }
 
         // OK, it's active. Check on turn status.
@@ -764,5 +761,20 @@ public class MainActivity extends UtilityActivity implements
     @Override
     public void onVoteCardClicked() {
         onSubmitClicked();
+    }
+
+    @Override
+    public void onGameOver() {
+        showSpinner();
+        Games.TurnBasedMultiplayer.finishMatch(mGoogleApiClient, mMatch.getMatchId())
+                .setResultCallback(new ResultCallback<TurnBasedMultiplayer.UpdateMatchResult>() {
+                    @Override
+                    public void onResult(TurnBasedMultiplayer.UpdateMatchResult result) {
+                        processResult(result);
+                    }
+                });
+
+        isDoingTurn = false;
+        setViewVisibility();
     }
 }
