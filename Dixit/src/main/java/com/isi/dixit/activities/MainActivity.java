@@ -2,9 +2,11 @@ package com.isi.dixit.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -33,6 +35,7 @@ import com.isi.dixit.game.Score;
 import com.isi.dixit.utilities.CardProvider;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 
 public class MainActivity extends UtilityActivity implements
@@ -58,6 +61,7 @@ public class MainActivity extends UtilityActivity implements
     private TurnBasedMatch mTurnBasedMatch;
 
     // For our intents
+    private final int REQ_CODE_SPEECH_INPUT = 100;
     private static final int RC_SIGN_IN = 9001;
     final static int RC_SELECT_PLAYERS = 10000;
     final static int RC_LOOK_AT_MATCHES = 10001;
@@ -369,6 +373,16 @@ public class MainActivity extends UtilityActivity implements
                         });
                 showSpinner();
                 break;
+
+            case REQ_CODE_SPEECH_INPUT: // RECOGNIZE SPEECH
+                if (response == RESULT_OK && null != data) {
+                    ArrayList<String> result = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    mGamePlayFragment.onSpeechRecognitionFinished(result.get(0));
+                } else {
+                    toastMsg("ERROR ON SPEECH RECOGNITION");
+                }
+                break;
         }
     }
 
@@ -487,13 +501,13 @@ public class MainActivity extends UtilityActivity implements
                 return;
             case TurnBasedMatch.MATCH_STATUS_COMPLETE:
                 if (turnStatus == TurnBasedMatch.MATCH_TURN_STATUS_COMPLETE) {
-                    showWarning("Game over!", mTurnData.winnerName + " won! Congrats!");
+                    showWarning("Game over!", "Somebody won! Congrats!");
                     break;
                 }
 
                 // Note that in this state, you must still call "Finish" yourself,
                 // so we allow this to continue.
-                showWarning("Game over!", mTurnData.winnerName + " won! Congrats!");
+                showWarning("Game over!", "Somebody won! Congrats!");
         }
 
         // OK, it's active. Check on turn status.
@@ -776,5 +790,23 @@ public class MainActivity extends UtilityActivity implements
 
         isDoingTurn = false;
         setViewVisibility();
+    }
+
+    @Override
+    public void onDescribeClicked() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US");
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                getString(R.string.speech_prompt));
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(this,
+                    getString(R.string.speech_not_supported),
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 }

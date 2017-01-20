@@ -1,7 +1,10 @@
 package com.isi.dixit.fragments;
 
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.isi.dixit.R;
 import com.isi.dixit.adapters.RvCardAdapter;
@@ -31,12 +35,15 @@ import com.isi.dixit.utilities.CardProvider;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class GameplayFragment extends Fragment {
     private final String TAG = getClass().getSimpleName();
+    private final int REQ_CODE_SPEECH_INPUT = 100;
 
     public interface Listener {
         void onSubmitClicked();
+        void onDescribeClicked();
         void onStartVoteClicked();
         void onPlayCardClicked();
         void onVoteCardClicked();
@@ -178,13 +185,12 @@ public class GameplayFragment extends Fragment {
 
                 mCardAdapter.setCards(mHandCards);
 
-                mSubmitBtn.setText("PLAY CARD");
+                mSubmitBtn.setText("DESCRIBE CARD");
                 mSubmitBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         mTurnData.describedCard = mSelectedCard.getCardId();
-                        mTurnData.cardDescription = mCardDescription;
-                        mListener.onSubmitClicked();
+                        startSpeechRecognition();
                     }
                 });
                 return;
@@ -314,6 +320,22 @@ public class GameplayFragment extends Fragment {
             mCandidatesCards.add(new Card("c" + selectedCard.card, selectedCard.card));
         }
         mCandidatesCards.add(new Card("c" + mTurnData.describedCard, mTurnData.describedCard));
+    }
+
+    private void startSpeechRecognition() {
+        mListener.onDescribeClicked();
+    }
+
+    public void onSpeechRecognitionFinished(String result) {
+        mSubmitBtn.setText("PLAY CARD");
+        mTurnData.cardDescription = result;
+        mSubmitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onSubmitClicked();
+            }
+        });
+        showDescription(true);
     }
 
     private void showDescription(boolean yes) {
