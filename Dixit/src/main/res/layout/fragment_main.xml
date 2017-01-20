@@ -7,19 +7,6 @@
     android:orientation="vertical">
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/dixit"
-            android:scaleType="fitXY"/>
-    </FrameLayout>
-
-    <FrameLayout
         android:id="@+id/fl_sign_in"
         android:layout_height="70dp"
         android:layout_width="match_parent"
@@ -42,10 +29,23 @@
     </FrameLayout>
 
     <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/fl_sign_in">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/board"
+            android:scaleType="fitXY"/>
+    </FrameLayout>
+
+    <FrameLayout
         android:id="@+id/fl_game_menu"
         android:layout_height="112dp"
         android:layout_width="match_parent"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_gravity="center_vertical">
@@ -66,11 +66,16 @@
                 android:id="@+id/btn_start_game"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
                 android:layout_alignParentStart="true"
                 android:layout_gravity="start"
-                android:text="@string/msg.start.game" />
+                android:text="@string/msg.start.game"
+                android:textColor="#FFFFFF"
+                android:background="@color/colorPrimary"/>
 
             <Button
+                android:visibility="gone"
                 android:id="@+id/btn_quick_game"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
@@ -83,19 +88,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
                 tools:text="Hello, John"
                 android:textSize="24sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"/>
 
             <Button
                 android:id="@+id/btn_check_games"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
                 android:layout_gravity="end"
-                android:text="@string/msg.check.games" />
+                android:text="@string/msg.check.games"
+                android:textColor="#FFFFFF"
+                android:background="@color/colorPrimary"/>
 
             <Button
+                android:visibility="gone"
                 android:id="@+id/btn_sign_out"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
@@ -106,90 +118,13 @@
         </RelativeLayout>
     </FrameLayout>
 
-    <FrameLayout
-        android:id="@+id/fl_gameplay"
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/fl_sign_in"
-        android:layout_alignParentStart="true">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="visible">
-
-            <EditText
-                android:id="@+id/data_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_margin="8dp"
-                android:gravity="center"
-                android:maxLines="1"
-                android:text="@string/hello_world"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:layout_alignParentEnd="true"/>
-
-            <TextView
-                android:id="@+id/turn_counter_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/turn_counter"
-                android:width="300dp"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentStart="true"
-                android:layout_margin="8dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:layout_below="@+id/data_view"
-                android:weightSum="4">
-
-                <Button
-                    android:id="@+id/doneButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:onClick="onDoneClicked"
-                    android:text="@string/done"
-                    tools:ignore="ButtonStyle"
-                    android:layout_weight="1" />
-
-                <Button
-                    android:id="@+id/cancelButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:onClick="onCancelClicked"
-                    android:text="@string/cancel"
-                    tools:ignore="ButtonStyle"
-                    android:layout_weight="1" />
-
-                <Button
-                    android:id="@+id/leaveButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:onClick="onLeaveClicked"
-                    android:text="@string/leave"
-                    tools:ignore="ButtonStyle"
-                    android:layout_weight="1" />
-
-                <Button
-                    android:id="@+id/finishButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:onClick="onFinishClicked"
-                    android:text="@string/finish"
-                    tools:ignore="ButtonStyle"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-        </RelativeLayout>
-    </FrameLayout>
+        android:layout_height="100dp"
+        android:text="Dixit"
+        android:layout_marginTop="100dp"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        android:gravity="center_horizontal"
+        android:textColor="#FFFFFF"/>
 </RelativeLayout>

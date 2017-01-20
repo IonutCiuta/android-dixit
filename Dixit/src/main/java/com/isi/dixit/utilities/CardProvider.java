@@ -1,14 +1,10 @@
 package com.isi.dixit.utilities;
 
 
-import com.isi.dixit.models.Card;
-import com.isi.dixit.models.Score;
+import com.isi.dixit.game.Score;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
-import java.util.Set;
 
 public class CardProvider {
     private static final int HAND_COUNT = 6;

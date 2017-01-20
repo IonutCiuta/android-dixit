@@ -5,18 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#cccccc">
-
-    <TextView
-        android:text="Turn 0"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/selectedLl"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="64dp"
-        android:textSize="48sp"
-        android:textStyle="bold"
-        android:id="@+id/tvTurnCounter" />
+    android:background="@drawable/board">
 
     <FrameLayout
         android:id="@+id/selectedLl"
@@ -24,8 +13,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_centerHorizontal="true"
-        android:paddingTop="8dp"
-        android:visibility="gone">
+        android:paddingTop="8dp">
 
         <android.support.v7.widget.CardView
             android:id="@+id/selectedCardCv"
@@ -124,11 +112,25 @@
 
     <Button
         android:text="Submit"
-        android:layout_width="wrap_content"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="32dp"
+        android:layout_marginEnd="16dp"
         android:id="@+id/submitBtn"
+        android:visibility="visible"
+        android:background="@color/colorPrimary"
+        android:textColor="#FFFFFF"/>
+
+    <TextView
+        android:id="@+id/tvDescription"
+        android:text="&quot;Success&quot;"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_margin="16dp"
+        android:textColor="#FFFFFF"
         android:visibility="gone"/>
 </RelativeLayout>

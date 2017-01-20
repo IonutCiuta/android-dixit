@@ -12,6 +12,7 @@
     <string name="msg.check.games">Check Games</string>
     <string name="msg.sign.out">Sign Out</string>
     <string name="msg.greeting">Hello, %1$s</string>
+    <string name="msg.description">&quot;%1$s&quot;</string>
 
     <string name="error.authentication.title">Authentication Error</string>
     <string name="error.authentication.content">An error occurred while trying to connect to the Google Play Services. Please try again later.</string>

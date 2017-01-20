@@ -8,10 +8,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.isi.dixit.R;
-import com.isi.dixit.models.Score;
+import com.isi.dixit.game.Score;
 
 import java.util.List;
-import java.util.zip.Inflater;
 
 public class RvScoreAdapter extends RecyclerView.Adapter<RvScoreAdapter.ScoreViewHolder> {
     private final String TAG = this.getClass().getSimpleName();
@@ -48,8 +47,13 @@ public class RvScoreAdapter extends RecyclerView.Adapter<RvScoreAdapter.ScoreVie
         }
 
         void configure(Score score) {
-            mPlayerTv.setText(score.getPlayer());
-            mPointsTv.setText(score.getPoints() + "");
+            mPlayerTv.setText(score.name);
+            mPointsTv.setText(score.points + "");
         }
+    }
+
+    public void setScores(List<Score> scores) {
+        mScores = scores;
+        notifyDataSetChanged();
     }
 }

@@ -1,11 +1,11 @@
-package com.isi.dixit.models;
+package com.isi.dixit.game;
 
 
 import java.io.Serializable;
 
 public class Card implements Serializable {
-    String cardSrcId;
-    Integer cardId;
+    public String cardSrcId;
+    public Integer cardId;
 
     public Card() {
     }

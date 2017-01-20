@@ -29,28 +29,12 @@ import com.isi.dixit.fragments.MainFragment;
 import com.isi.dixit.game.DixitState;
 import com.isi.dixit.game.DixitTurn;
 import com.isi.dixit.game.Hand;
+import com.isi.dixit.game.Score;
 import com.isi.dixit.utilities.CardProvider;
 
 import java.util.ArrayList;
 
 
-/**
- * TBMPSkeleton: A minimalistic "game" that shows turn-based
- * multiplayer features for Play Games Services.  In this game, you
- * can invite a variable number of players and take turns editing a
- * shared state, which consists of single string.  You can also select
- * automatch players; all known players play before automatch slots
- * are filled.
- *
- * INSTRUCTIONS: To run this sample, please set up
- * a project in the Developer Console. Then, place your app ID on
- * res/values/ids.xml. Also, change the package name to the package name you
- * used to create the client ID in Developer Console. Make sure you sign the
- * APK with the certificate whose fingerprint you entered in Developer Console
- * when creating your Client Id.
- *
- * @author Wolff (wolff@google.com), 2013
- */
 public class MainActivity extends UtilityActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         OnInvitationReceivedListener, OnTurnBasedMatchUpdateReceivedListener,
@@ -240,7 +224,6 @@ public class MainActivity extends UtilityActivity implements
         String nextParticipantId = getNextParticipantId();
         // Create the next turn
         mTurnData.turnCounter += 1;
-        mTurnData.cardDescription = mMainFragment.getDataViewContent();
 
         showSpinner();
 
@@ -265,7 +248,6 @@ public class MainActivity extends UtilityActivity implements
         if(mMainFragment != null) {
             if (!isSignedIn) {
                 mMainFragment.showSignInButton(true);
-                findViewById(R.id.fl_gameplay).setVisibility(View.GONE);
 
                 if (mAlertDialog != null) {
                     mAlertDialog.dismiss();
@@ -278,10 +260,8 @@ public class MainActivity extends UtilityActivity implements
 
             if (isDoingTurn) {
                 findViewById(R.id.fl_game_menu).setVisibility(View.GONE);
-                findViewById(R.id.fl_gameplay).setVisibility(View.VISIBLE);
             } else {
                 findViewById(R.id.fl_game_menu).setVisibility(View.VISIBLE);
-                findViewById(R.id.fl_gameplay).setVisibility(View.GONE);
             }
         }
     }
@@ -524,6 +504,7 @@ public class MainActivity extends UtilityActivity implements
             case TurnBasedMatch.MATCH_TURN_STATUS_MY_TURN:
                 mTurnData = DixitState.unpersistState(mMatch.getData());
                 mTurnData.currentPlayer = Games.Players.getCurrentPlayerId(mGoogleApiClient);
+                addPlayerScore();
                 setGameplayUI();
                 return;
             case TurnBasedMatch.MATCH_TURN_STATUS_THEIR_TURN:
@@ -538,6 +519,20 @@ public class MainActivity extends UtilityActivity implements
         mTurnData = null;
 
         setViewVisibility();
+    }
+
+    private void addPlayerScore() {
+        for(int i = 0; i < mTurnData.leaderboard.size(); i++) {
+            if(mTurnData.leaderboard.get(i).player.equals(mTurnData.currentPlayer)) {
+                return;
+            }
+        }
+
+        Score playerScore = new Score();
+        playerScore.player = mTurnData.currentPlayer;
+        playerScore.points = 0;
+        playerScore.name = Games.Players.getCurrentPlayer(mGoogleApiClient).getDisplayName();
+        mTurnData.leaderboard.add(playerScore);
     }
 
     private void processResult(TurnBasedMultiplayer.CancelMatchResult result) {
@@ -770,10 +765,4 @@ public class MainActivity extends UtilityActivity implements
     public void onVoteCardClicked() {
         onSubmitClicked();
     }
-
-    public String identifyMe() {
-        return Games.Players.getCurrentPlayerId(mGoogleApiClient);
-    }
-
-
 }

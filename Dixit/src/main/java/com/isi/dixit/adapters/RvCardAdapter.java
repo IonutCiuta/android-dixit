@@ -11,7 +11,7 @@ import android.widget.ImageView;
 
 import com.isi.dixit.R;
 import com.isi.dixit.fragments.GameplayFragment;
-import com.isi.dixit.models.Card;
+import com.isi.dixit.game.Card;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;

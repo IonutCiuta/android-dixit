@@ -25,8 +25,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
     private Listener mListener;
     private boolean mShowSignIn;
-
-    public TextView mDataView, mTurnTextView, mGreetingTextView;
+    public TextView mGreetingTextView;
 
     public static MainFragment getInstance(Listener listener) {
         MainFragment instance = new MainFragment();
@@ -44,8 +43,6 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         for(int id : CLICKABLES)
             rootView.findViewById(id).setOnClickListener(this);
 
-        mDataView = (TextView) rootView.findViewById(R.id.data_view);
-        mTurnTextView = (TextView) rootView.findViewById(R.id.turn_counter_view);
         mGreetingTextView = (TextView) rootView.findViewById(R.id.tv_greeting);
 
         return rootView;
@@ -101,17 +98,5 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     public void showGreeting(Player player) {
         mGreetingTextView.setText(player == null ?
                 "???" : String.format(getString(R.string.msg_greeting), player.getDisplayName()));
-    }
-
-    public void updateTurnCounterView(String text) {
-        mTurnTextView.setText(text);
-    }
-
-    public void updateDataView(String text) {
-        mDataView.setText(text);
-    }
-
-    public String getDataViewContent() {
-        return mDataView.getText().toString();
     }
 }
